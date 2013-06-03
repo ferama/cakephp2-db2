@@ -71,7 +71,7 @@ class DB2 extends DboSource {
                     'string' => array('type' => 'varchar', 'limit' => '255'),
                     'char' => array('type' => 'char', 'limit' => '255'),
                     'varchar' => array('type' => 'varchar', 'limit' => '255'),
-                    'text' => array('type' => 'text'),
+                    'clob' => array('type' => 'text'),
                     'integer' => array('type' => 'int', 'limit' => '11'),
                     'smallint' => array('type' => 'int', 'limit' => '6'),
                     'float' => array('type' => 'float'),
