@@ -60,7 +60,10 @@ class DB2 extends DboSource {
  * @var string
  */
 	public $endQuote = "";
+    
 
+
+    private $queryFields = array();
 /**
  * Columns
  *
@@ -201,17 +204,21 @@ class DB2 extends DboSource {
  * @param unknown_type $results
  */
 	public function resultSet(&$results) {
-		$this->map = array();
-		$clean = substr($results->queryString, strpos($results->queryString, " ") + 1);
-		$clean = substr($clean, 0, strpos($clean, ' FROM') - strlen($clean));
-		$parts = explode(", ", $clean);
-		foreach ($parts as $key => $value) {
-			list($table, $name) = pluginSplit($value, false, 0);
-			if (!$table && strpos($name, $this->virtualFieldSeparator) !== false) {
-				$name = substr(strrchr($name, " "), 1);
-			}
-			$this->map[$key] = array($table, $name, "VAR_STRING");
-		}
+        $this->map = array();
+        $index = 0; 
+        foreach ($this->queryFields as $column) {
+            $model = "";
+            $name = "";
+            $tmp = explode(".", $column);
+            $model = $tmp[0];
+            if (count($tmp) > 1) $name = $tmp[1];
+            if (!empty($name) && strpos($name, $this->virtualFieldSeparator) === false) {
+                $this->map[$index++] = array($model, $name, "VAR_STRING");
+            }
+            else {
+                $this->map[$index++] = array(0, $column, "VAR_STRING");
+            }
+        }
 	}
 
 /**
@@ -266,12 +273,11 @@ class DB2 extends DboSource {
                     $pieces = explode(", ", $fields);
                     $t = explode(".", $pieces[0]);
                     $objName =  $t[0];
-                    $limit_sql = "SELECT {$fields}, {$objName}.CakeRowNum
-                                  FROM ( SELECT t.*, row_number() OVER() AS CakeRowNum
-                                         FROM (".$sql.") AS t
-                                       ) AS {$objName}
-                                  WHERE {$objName}.CakeRowNum BETWEEN ".$limit;
-                   // debug($limit_sql);
+                    $limit_sql = "SELECT * 
+                                  FROM ( SELECT t1.*, row_number() OVER() AS CakeRowNum
+                                         FROM (".$sql.") AS t1
+                                       ) AS t2 
+                                  WHERE t2.CakeRowNum BETWEEN ".$limit;
                     return $limit_sql;
                 }
                 return $sql;
@@ -417,6 +423,7 @@ class DB2 extends DboSource {
  * @see DboSource::renderStatement()
  */
 	public function buildStatement($query, $model) {
+        $this->queryFields = $query['fields'];
 		$query = array_merge(array('offset' => null, 'joins' => array()), $query);
 		if (!empty($query['joins'])) {
 			$count = count($query['joins']);
