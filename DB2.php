@@ -273,11 +273,17 @@ class DB2 extends DboSource {
                     $pieces = explode(", ", $fields);
                     $t = explode(".", $pieces[0]);
                     $objName =  $t[0];
+                    $ordert1 = "";
+                    $ordert2 = "";
+                    if (!empty($order)) {
+                        $ordert1 = 'ORDER BY ORDER OF t1';
+                        $ordert2 = 'ORDER BY ORDER OF t2';
+                    }
                     $limit_sql = "SELECT * 
                                   FROM ( SELECT t1.*, row_number() OVER() AS CakeRowNum
-                                         FROM (".$sql.") AS t1
+                                         FROM (".$sql.") AS t1 $ordert1 
                                        ) AS t2 
-                                  WHERE t2.CakeRowNum BETWEEN ".$limit;
+                                  WHERE t2.CakeRowNum BETWEEN ".$limit." ".$ordert2;
                     return $limit_sql;
                 }
                 return $sql;
