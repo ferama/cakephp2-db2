@@ -432,27 +432,9 @@ class DB2 extends DboSource {
 	public function buildStatement($query, $model) {
         $this->queryFields = $query['fields'];
 		$query = array_merge(array('offset' => null, 'joins' => array()), $query);
-		if (!empty($query['joins'])) {
-			$count = count($query['joins']);
-			for ($i = 0; $i < $count; $i++) {
-				if (is_array($query['joins'][$i])) {
-					$query['conditions'][] = $query['joins'][$i]['conditions'];
-				}
-			}
-		}
 		return parent::buildStatement($query, $model);
 	}
 
-/**
- * Renders a final SQL JOIN statement
- *
- * @param array $data
- * @return string
- */
-	public function renderJoinStatement($data) {
-		extract($data);
-		return trim(", {$table} {$alias}");
-	}
 
 /**
  * Generates the fields list of an SQL query.
