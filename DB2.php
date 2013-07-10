@@ -165,7 +165,6 @@ class DB2 extends DboSource {
         }
 
         $fields = array();
-        //$sql = 'SELECT * FROM '.$this->config['database'].'.'.$this->fullTableName($model, false);
 
         $sql = "select column_name, data_type, length, numeric_scale from qsys2.syscolumns where table_schema = '".$this->config['database']."' and table_name = '".strtoupper($this->fullTableName($model, false))."'";
 
@@ -185,16 +184,14 @@ class DB2 extends DboSource {
         }
         unset($result);
 
-        //$fields['id'] = $this->columns['integer'];
-
         foreach ($rows as $row) {
-            //debug($this->columns);
             $cols = array_keys($row);
             $row['DATA_TYPE'] = strtolower(trim($row['DATA_TYPE']));
             $fields[strtolower($row['COLUMN_NAME'])] = $this->columns[$row['DATA_TYPE']];
+            $fields[strtolower($row['COLUMN_NAME'])]['length'] = $row['LENGTH'];
         }
-        //$fields['ID']['key'] = 'primary';
         $this->_cacheDescription($model->tablePrefix . $model->table, $fields);
+        #debug($fields);
 
         return $fields;
     }
