@@ -84,7 +84,7 @@ class DB2 extends DboSource {
                             'timestamp' => array('type' => 'datetime', 'format' => 'Y-m-d h:i:s', 'formatter' => 'date'),
                             'timestmp' => array('type' => 'datetime', 'format' => 'Y-m-d h:i:s', 'formatter' => 'date'),
                             'time' => array('type' => 'time', 'format' => 'h:i:s', 'formatter' => 'date'),
-                            'date' => array('type' => 'date', 'format' => 'd/m/Y', 'formatter' => 'date'),
+                            'date' => array('type' => 'date', 'format' => 'Y-m-d', 'formatter' => 'date'),
                             'binary' => array('type' => 'blob'),
                             'boolean' => array('type' => 'tinyint', 'limit' => '1'));
 
