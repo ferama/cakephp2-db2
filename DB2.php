@@ -202,6 +202,8 @@ class DB2 extends DboSource {
  * @param unknown_type $results
  */
 	public function resultSet(&$results) {
+		$numFields = $results->columnCount();
+        
         $this->map = array();
         $index = 0; 
         foreach ($this->queryFields as $column) {
@@ -427,7 +429,11 @@ class DB2 extends DboSource {
  * @see DboSource::renderStatement()
  */
 	public function buildStatement($query, $model) {
-        $this->queryFields = $query['fields'];
+        if (count($query['fields']) == 1) {
+            $this->queryFields = array_map('trim', explode(',', $query['fields'][0]));
+        } else {
+            $this->queryFields = $query['fields'];
+        }
 		$query = array_merge(array('offset' => null, 'joins' => array()), $query);
 		return parent::buildStatement($query, $model);
 	}
