@@ -256,6 +256,27 @@ class DB2 extends DboSource {
 		return false;
 	}
 
+    
+    /*	
+    public function create(Model $model, $fields = null, $values = null) {
+        $idx = 0;
+        foreach ($values as $value) {
+            $values[$idx] = strtoupper($value);
+            $idx++;
+        }
+        return parent::create($model, $fields, $values);
+    }
+
+	public function update(Model $model, $fields = array(), $values = null, $conditions = null) {
+        $idx = 0;
+        foreach ($values as $value) {
+            $values[$idx] = strtoupper($value);
+            $idx++;
+        }
+        return parent::update($model, $fields, $values, $conditions);
+    }
+    */
+
 /**
  * Renders a final SQL statement by putting together the component parts in the correct order
  *
@@ -385,7 +406,6 @@ class DB2 extends DboSource {
 		if (empty($column)) {
 			$column = $this->introspectType($data);
 		}
-
 		switch ($column) {
 			case 'binary':
 				return $this->_connection->quote($data, PDO::PARAM_LOB);
@@ -394,13 +414,9 @@ class DB2 extends DboSource {
 				return $this->_connection->quote($this->boolean($data, true), PDO::PARAM_BOOL);
 			break;
 			case 'string':
-			case 'text':
-				if ((is_int($data) || $data === '0') || (
-					is_numeric($data) && strpos($data, ',') === false &&
-					$data[0] != '0' && strpos($data, 'e') === false)
-				) {
-					//return $data;
-				}
+			case 'char':
+			case 'varchar':
+                $data = str_replace("'", "''", $data);
 				return "'$data'";
 			default:
 				if ($data === '') {
@@ -408,12 +424,6 @@ class DB2 extends DboSource {
 				}
 				if (is_float($data)) {
 					return sprintf('%F', $data);
-				}
-				if ((is_int($data) || $data === '0') || (
-					is_numeric($data) && strpos($data, ',') === false &&
-					$data[0] != '0' && strpos($data, 'e') === false)
-				) {
-					//return $data;
 				}
 				return "'$data'";
 			break;
